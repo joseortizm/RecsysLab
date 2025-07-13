@@ -42,6 +42,8 @@ def cosine_sim(i: int, j: int, matrix: pd.DataFrame) -> float:
                     (sqrt(sum_{u ∈ U_{ij}} r_{u,i}^2) * sqrt(sum_{u ∈ U_{ij}} r_{u,j}^2))
 
     where:
+        - vec_i is the column vector of ratings for item i, that is, all the ratings given by different users to item i
+        - vec_j is the column vector of ratings for item j, that is, all the ratings given by different users to item j
         - r_{u,i} is the rating user u gave to item i
         - U_{ij} is the set of users who rated both items i and j
     """
@@ -52,13 +54,21 @@ def cosine_sim(i: int, j: int, matrix: pd.DataFrame) -> float:
     
     # Find users who rated both items
     common = ratings_i.notna() & ratings_j.notna()
+    # u1 -> True
+    # u2 -> False
+    # ... -> ...
+    # u4 -> True
+    # ... -> ... 
     
     # If no users rated both, similarity is 0
     if common.sum() == 0:
         return 0.0
     
-    # Filter only the common ratings
+    # Filter only the common ratings (pandas operation)
     vec_i = ratings_i[common]
+    # u1 -> 5.0
+    # u4 -> 3.0
+    # ... -> ..
     vec_j = ratings_j[common]
     
     # Compute cosine similarity: dot product divided by product of norms
@@ -71,8 +81,36 @@ def cosine_sim(i: int, j: int, matrix: pd.DataFrame) -> float:
 #sim_50_181 = cosine_sim(50, 181, user_item_matrix)
 #print(f"Similarity between item 50 and 181 is {sim_50_181:.4f}")
 
-# TODO: Figure 2: Items and Similarity computation
+# Figure 2: Items and Similarity computation
 
+item_ids = user_item_matrix.columns
+n_items = len(item_ids)
+
+# init matrix
+similarity_matrix = pd.DataFrame(
+    data=np.zeros((n_items, n_items)),
+    index=item_ids,
+    columns=item_ids
+)
+
+# Similarity computation for (i, j)
+for idx_i, i in enumerate(item_ids):
+    for idx_j in range(idx_i, n_items):  # 
+        j = item_ids[idx_j]
+        sim = cosine_sim(i, j, user_item_matrix)
+        
+        # 
+        similarity_matrix.at[i, j] = sim
+        similarity_matrix.at[j, i] = sim
+    # 
+
+    if idx_i % 100 == 0:
+        print(f"Processed {idx_i}/{n_items} items...")
+        # Processed 0/1682 items...
+        # Processed 100/1682 items...
+        # Processed 200/1682 items...
+
+print(similarity_matrix.iloc[:5, :5])
 
 
 
