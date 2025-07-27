@@ -7,6 +7,8 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 import csv
 from datetime import datetime
+from tqdm import tqdm
+import time
 
 column_names = ['user_id', 'item_id', 'rating', 'timestamp']
 
@@ -129,6 +131,7 @@ def build_item_similarity_matrix(user_item_matrix: pd.DataFrame) -> pd.DataFrame
         columns=item_ids
     )
 
+    start_time = time.time()
     for idx_i, i in enumerate(item_ids):
         for idx_j in range(idx_i, n_items):  # Only j ≥ i due to symmetry
             j = item_ids[idx_j]
@@ -137,9 +140,39 @@ def build_item_similarity_matrix(user_item_matrix: pd.DataFrame) -> pd.DataFrame
             similarity_matrix.at[j, i] = sim
 
         if idx_i % 100 == 0:
-            print(f"Processed {idx_i}/{n_items} items...")
-
+            elapsed = time.time() - start_time
+            #print(f"Processed {idx_i}/{n_items} items...")
+            print(f"[{idx_i}/{n_items}] Elapsed time: {elapsed:.2f} seconds")
+    
     return similarity_matrix
+
+# Extra:
+
+def save_similarity_matrix(matrix: pd.DataFrame, path: str = "item_similarity_matrix.pkl") -> None:
+    """
+    Save the similarity matrix to a pickle file.
+    
+    Args:
+        matrix (pd.DataFrame): The similarity matrix to save.
+        path (str): File path to save the matrix (default: item_similarity_matrix.pkl).
+    """
+    matrix.to_pickle(path)
+    print(f"Similarity matrix saved to {path}")
+
+
+def load_similarity_matrix(path: str = "item_similarity_matrix.pkl") -> pd.DataFrame:
+    """
+    Load a similarity matrix from a pickle file.
+    
+    Args:
+        path (str): File path to load the matrix from (default: item_similarity_matrix.pkl).
+        
+    Returns:
+        pd.DataFrame: The loaded similarity matrix.
+    """
+    matrix = pd.read_pickle(path)
+    print(f"Similarity matrix loaded from {path}")
+    return matrix
 
 # 3.2 Prediction Computation
 
@@ -319,6 +352,7 @@ print("Number of items with at least one rating (in user-item matrix):", user_it
 
 # Step 3: Compute the item-item similarity matrix
 similarity_matrix = build_item_similarity_matrix(user_item_matrix)
+save_similarity_matrix(similarity_matrix)
 
 # Step 4: Evaluate prediction accuracy using MAE
 k = 30
@@ -344,6 +378,10 @@ with open("results.csv", mode="a", newline="") as file:
         round(mae, 4),
         datetime.now().isoformat()
     ])
+
+
+
+
 
 
 

@@ -1,0 +1,2 @@
+dataset,method,k,X_train_ratio,mae,timestamp
+MovieLens100k,item-based,30,0.8,0.9094,2025-07-27T18:40:51.917477
