@@ -342,6 +342,8 @@ def evaluate_mae(test_df: pd.DataFrame, ratings_matrix: pd.DataFrame, sim_matrix
     return sum(errors) / len(errors)
 
 
+# ----------------------------------------------------------
+'''
 # Step 1: Split dataset by user (80% train, 20% test)
 train_df, test_df = split_ratings_by_user(ratings, test_ratio=0.2)
 
@@ -378,7 +380,8 @@ with open("results.csv", mode="a", newline="") as file:
         round(mae, 4),
         datetime.now().isoformat()
     ])
-
+'''
+# ----------------------------------------------------------
 
 
 
