@@ -64,6 +64,26 @@ for test_ratio in test_ratios:
     print(f"MAE for X = {X:.2f}, k = {k}: {mae:.4f}")
     append_result_to_csv(dataset_name, method, k, X, mae, csv_filename)
 
+# NOTE:
+# In theory, increasing the number of neighbors (k) should improve prediction accuracy
+# or at least improve it up to a certain point before it plateaus or slightly degrades.
+# However, in our implementation, increasing k is worsening the prediction (MAE is increasing),
+# which is the opposite of what is shown in the original paper by Sarwar et al. (2001).
+#
+# This suggests that we may be:
+# - Missing some preprocessing or filtering steps used by the authors,
+# - Using a slightly different similarity or prediction approach,
+# - Or not replicating exactly the same experimental conditions (e.g., test/train split, density levels, or evaluation method).
+#
+# RECOMMENDATION:
+# To improve prediction accuracy and better align with the results reported in the paper,
+# consider modifying the prediction function as follows:
+#
+# 1. Use only items with similarity > 0 (positive similarities).
+# 2. Consider only the items that the user has rated.
+# 3. Apply top-k filtering to select the k most similar items from those.
+# 4. Compute the prediction using a weighted average of ratings, weighted by similarity.
+
 
 
 
