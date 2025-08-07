@@ -34,20 +34,6 @@ ratings = pd.read_csv(
 )
 
 # ===  Parameter x  ===
-'''
-for X in train_ratios:
-    X = 1 - test_ratio
-    print(f"\n=== Running experiment with Test Ratio = {test_ratio} (i.e. Train Ratio X = {X}) ===")
-    #print(f"\n=== Running experiment with X = {X} (train_ratio) ===")
-    train_df, test_df = split_ratings_by_user(ratings, test_ratio=test_ratio)
-    user_item_matrix = build_user_item_matrix(train_df)
-    similarity_matrix = build_item_similarity_matrix(user_item_matrix)
-    save_similarity_matrix(similarity_matrix, path=f"item_similarity_matrix_X{X}.pkl")
-    mae = evaluate_mae(test_df, user_item_matrix, similarity_matrix, k)
-
-    print(f"MAE for X = {X:.2f}, k = {k}: {mae:.4f}")
-    append_result_to_csv(dataset_name, method, k, X, mae, csv_filename)
-'''
 for test_ratio in test_ratios:
     test_ratio = round(test_ratio, 2)
     X = round(1 - test_ratio, 2)
@@ -64,25 +50,7 @@ for test_ratio in test_ratios:
     print(f"MAE for X = {X:.2f}, k = {k}: {mae:.4f}")
     append_result_to_csv(dataset_name, method, k, X, mae, csv_filename)
 
-# NOTE:
-# In theory, increasing the number of neighbors (k) should improve prediction accuracy
-# or at least improve it up to a certain point before it plateaus or slightly degrades.
-# However, in our implementation, increasing k is worsening the prediction (MAE is increasing),
-# which is the opposite of what is shown in the original paper by Sarwar et al. (2001).
-#
-# This suggests that we may be:
-# - Missing some preprocessing or filtering steps used by the authors,
-# - Using a slightly different similarity or prediction approach,
-# - Or not replicating exactly the same experimental conditions (e.g., test/train split, density levels, or evaluation method).
-#
-# RECOMMENDATION:
-# To improve prediction accuracy and better align with the results reported in the paper,
-# consider modifying the prediction function as follows:
-#
-# 1. Use only items with similarity > 0 (positive similarities).
-# 2. Consider only the items that the user has rated.
-# 3. Apply top-k filtering to select the k most similar items from those.
-# 4. Compute the prediction using a weighted average of ratings, weighted by similarity.
+
 
 
 
