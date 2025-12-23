@@ -1,0 +1,3 @@
+# RecsysLab
+
+- Virtual environment: agentes
